@@ -2547,10 +2547,11 @@ class Container(Layer):
         """
         return yaml.dump(self._updated_config(), **kwargs)
 
-    def summary(self, line_length=None, positions=None):
+    def summary(self, line_length=None, positions=None, print_to_log = False): #barh: my addition
         print_layer_summary(self,
                             line_length=line_length,
-                            positions=positions)
+                            positions=positions,
+                            print_to_log = print_to_log)
 
 
 def get_source_inputs(tensor, layer=None, node_index=None):
