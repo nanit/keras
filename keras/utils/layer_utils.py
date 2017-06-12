@@ -3,9 +3,10 @@ from __future__ import print_function
 from .conv_utils import convert_kernel
 from .. import backend as K
 import numpy as np
+import logging
 
 
-def print_summary(model, line_length=None, positions=None):
+def print_summary(model, line_length=None, positions=None, print_to_log = None):    #barh: my addition
     """Prints a summary of a model.
 
     # Arguments
@@ -52,10 +53,13 @@ def print_summary(model, line_length=None, positions=None):
             line = line[:positions[i]]
             line += ' ' * (positions[i] - len(line))
         print(line)
+        logging.info(line)
 
     print('_' * line_length)
+    logging.info('_' * line_length)
     print_row(to_display, positions)
     print('=' * line_length)
+    logging.info('=' * line_length)
 
     def print_layer_summary(layer):
         try:
@@ -109,8 +113,10 @@ def print_summary(model, line_length=None, positions=None):
             print_layer_summary_with_connections(layers[i])
         if i == len(layers) - 1:
             print('=' * line_length)
+            logging.info('=' * line_length)
         else:
             print('_' * line_length)
+            logging.info('_' * line_length)
 
     trainable_count = int(
         np.sum([K.count_params(p) for p in set(model.trainable_weights)]))
@@ -121,6 +127,12 @@ def print_summary(model, line_length=None, positions=None):
     print('Trainable params: {:,}'.format(trainable_count))
     print('Non-trainable params: {:,}'.format(non_trainable_count))
     print('_' * line_length)
+    # logging
+    logging.info('Total params: %s', trainable_count + non_trainable_count)
+    logging.info('Trainable params: %s', trainable_count)
+    logging.info('Non-trainable params: %s', non_trainable_count)
+    logging.info('_' * line_length)
+
 
 
 def convert_all_kernels_in_model(model):
