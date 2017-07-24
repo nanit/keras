@@ -433,7 +433,7 @@ class ModelCheckpoint(Callback):
                         if self.verbose > 0:
                             print('Epoch %05d: %s improved from %0.5f to %0.5f. '
                                   'Model is not saved because improvement is not bigger than %s. '
-                                  'The best epoch is still %s'
+                                  'The best epoch is still %s.'
                                   % (epoch, self.monitor, self.best,
                                      current, self.min_delta, self.best_epoch))
                     else:
