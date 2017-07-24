@@ -358,11 +358,17 @@ class ModelCheckpoint(Callback):
             saved (`model.save_weights(filepath)`), else the full model
             is saved (`model.save(filepath)`).
         period: Interval (number of epochs) between checkpoints.
+        
+        # barh addition
+        min_delta: minimum change in the monitored quantity
+            to qualify as an improvement, i.e. an absolute
+            change of less than min_delta, will count as no
+            improvement.
     """
 
     def __init__(self, filepath, monitor='val_loss', verbose=0,
                  save_best_only=False, save_weights_only=False,
-                 mode='auto', period=1):
+                 mode='auto', period=1, min_delta=0):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
@@ -371,6 +377,8 @@ class ModelCheckpoint(Callback):
         self.save_weights_only = save_weights_only
         self.period = period
         self.epochs_since_last_save = 0
+        self.min_delta = min_delta
+        self.best_epoch = 0
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -392,6 +400,11 @@ class ModelCheckpoint(Callback):
                 self.monitor_op = np.less
                 self.best = np.Inf
 
+        if self.monitor_op == np.greater:
+            self.min_delta *= 1
+        else:
+            self.min_delta *= -1
+
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
         self.epochs_since_last_save += 1
@@ -404,17 +417,25 @@ class ModelCheckpoint(Callback):
                     warnings.warn('Can save best model only with %s available, '
                                   'skipping.' % (self.monitor), RuntimeWarning)
                 else:
-                    if self.monitor_op(current, self.best):
+                    if self.monitor_op(current - self.min_delta, self.best):
                         if self.verbose > 0:
-                            print('Epoch %05d: %s improved from %0.5f to %0.5f,'
-                                  ' saving model to %s'
+                            print('Epoch %05d: %s improved from %0.5f to %0.5f, '
+                                  'saving model to %s'
                                   % (epoch, self.monitor, self.best,
                                      current, filepath))
                         self.best = current
+                        self.best_epoch = epoch
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
                         else:
                             self.model.save(filepath, overwrite=True)
+                    elif self.monitor_op(current, self.best):
+                        if self.verbose > 0:
+                            print('Epoch %05d: %s improved from %0.5f to %0.5f. '
+                                  'Model is not saved because improvement is not bigger than %s. '
+                                  'The best epoch is still %s'
+                                  % (epoch, self.monitor, self.best,
+                                     current, self.min_delta, self.best_epoch))
                     else:
                         if self.verbose > 0:
                             print('Epoch %05d: %s did not improve' %
