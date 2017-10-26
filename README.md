@@ -13,8 +13,8 @@ Added the paramter _min_delta_:
 
 
 * **keras/engine/topology.py + keras/utils/layer_utils.py:**  <br />
-Added the option to print the summary of the model to a log file.
+Added the option to print the model's summary to a log file.
 
 
 * **keras/preprocessing/image.py:** <br />
-sorted the files list to be able to train the U-net.
+Sorted the files list to be able to train the U-net.
