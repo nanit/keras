@@ -1,3 +1,6 @@
+## Install instructions
+* git clone to this repositroy
+* python setup.py develop (Inside the virtual env)
 
 ## List of changes from the 2.0.4 version:
 
