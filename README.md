@@ -1,6 +1,11 @@
 ## Install instructions
 * git clone to this repositroy
-* python setup.py develop (Inside the virtual env)
+
+* To install Keras, `cd` to the Keras folder and run the install command:
+```sh
+python setup.py develop
+```
+(Inside the virtual env)
 
 ## List of changes from the 2.0.4 version:
 
